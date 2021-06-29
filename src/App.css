@@ -1,0 +1,41 @@
+
+.app {
+  display: flex;
+  flex-direction: column;
+  /* TODO: Fix this width thing.
+    The "save" button sticks out to the right if I uncomment it. */
+  /* width: 100%; */
+  padding: 20px;
+  padding-top: 50px;
+}
+
+.page-header {
+  font-size: 20px;
+  color: #966147;
+  margin: 0;
+  margin-bottom: 30px;
+}
+
+/* ---- DobForm ---- */
+
+form.dob-form {
+  display: flex;
+  flex-direction: column;
+}
+form.dob-form.hidden {
+  display: none;
+}
+
+form.dob-form .form-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+form.dob-form .form-row > * {
+  margin-right: 10px;
+}
+
+form.dob-form .form-row.save-button {
+  justify-content: flex-end;
+}
