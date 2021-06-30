@@ -7,7 +7,7 @@ function App() {
     <div className="app">
       <h1 className="page-header">One Billion Seconds of Life</h1>
 
-      <DobForm />
+      <DobForm onSubmit={dob => console.log('on submit --', dob)}/>
     </div>
   );
 }
