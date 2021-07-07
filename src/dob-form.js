@@ -15,7 +15,7 @@ const startYear = 1920;
 const currYear = new Date(Date.now()).getFullYear();
 const yearValues = range(startYear, currYear).map(num => "" + num).reverse();
 
-function parseValues({ month, day, year, time }) {
+function convertToDate({ month, day, year, time }) {
   if (!(typeof time === 'string' && time.includes(':'))) {
     // TODO: better error handling.
     console.error('time control did not do what I expect');
@@ -23,13 +23,7 @@ function parseValues({ month, day, year, time }) {
   }
   const [hour, minute] = time.split(":").map(x => parseInt(x));
 
-  return {
-    month: parseInt(month),
-    day: parseInt(day),
-    year: parseInt(year),
-    hour,
-    minute,
-  };
+  return new Date(year, month - 1, day, hour, minute);
 }
 
 function DobForm({ onSubmit }) {
@@ -77,7 +71,7 @@ function DobForm({ onSubmit }) {
         <button
           onClick={event => {
             event.preventDefault();
-            onSubmit(parseValues({ month, day, year, time }));
+            onSubmit(convertToDate({ month, day, year, time }));
           }}
           disabled={!isFormComplete}
         >
