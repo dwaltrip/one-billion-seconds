@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { formatTime } from './lib/format-time';
 
 import { prettyDateDiff } from './ui/pretty-date-diff';
@@ -12,7 +13,14 @@ function dobToSecondsAlive(timeOfBirth) {
 const ONE_BILLION_SECONDS_IN_MILLISECONDS = Math.pow(10, 9) * 1000;
 
 function CalculatedInfo({ timeOfBirth }) {
-  const secondsAlive = dobToSecondsAlive(timeOfBirth);
+  const [secondsAlive, setSecondsAlive] = useState(dobToSecondsAlive(timeOfBirth));
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSecondsAlive(dobToSecondsAlive(timeOfBirth));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [timeOfBirth]);
 
   const oneBillionSecondsDate = new Date(
     timeOfBirth.getTime() + ONE_BILLION_SECONDS_IN_MILLISECONDS
