@@ -39,3 +39,20 @@ form.dob-form .form-row > * {
 form.dob-form .form-row.save-button {
   justify-content: flex-end;
 }
+
+form.dob-form select:required:invalid,
+form.dob-form input:required:invalid {
+  color: #aaa;
+}
+form.dob-form select option {
+  color: black;
+}
+form.dob-form select option[value=""][disabled] {
+  display: none;
+}
+
+/* ---- CalculatedInfo ---- */
+
+.calculated-info-row + .calculated-info-row {
+  margin-top: 15px;
+}

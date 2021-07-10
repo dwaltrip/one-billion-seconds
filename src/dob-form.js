@@ -8,8 +8,17 @@ const monthNames = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-// TODO: adjust the number of days based on the month choice
-const dayValues = range(1, 31).map(num => "" + num);
+function buildDayValues(numDays) {
+  return range(1, numDays).map(num => "" + num);
+}
+
+const dayValuesDefault = buildDayValues(31);
+
+// `month` is 0-indexed.
+function daysInMonth(year, month) {
+  // Passing `0` for 3rd arg of `new Date()` gives the last day of prev month.
+  return new Date(year, month + 1, 0).getDate();
+}
 
 const startYear = 1920;
 const currYear = new Date(Date.now()).getFullYear();
@@ -23,7 +32,7 @@ function convertToDate({ month, day, year, time }) {
   }
   const [hour, minute] = time.split(":").map(x => parseInt(x));
 
-  return new Date(year, month - 1, day, hour, minute);
+  return new Date(year, month, day, hour, minute);
 }
 
 function DobForm({ onSubmit }) {
@@ -31,6 +40,31 @@ function DobForm({ onSubmit }) {
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');
   const [time, setTime] = useState('');
+  const [dayValues, setDayValues] = useState(dayValuesDefault);
+
+  const updateDayValuesAndDay = (year, month) => {
+    // Must use the passed in values here, not the ones from `useState` above,
+    // as one of the values will be stale.
+    if (year.length > 0 && month.length > 0) {
+      const numDays = daysInMonth(parseInt(year), parseInt(month));
+      setDayValues(buildDayValues(numDays));
+
+      // Reset `day` if the value is now invalid
+      if (numDays < day) {
+        setDay('');
+      }
+    }
+  };
+
+  const setMonthAndThenDayValues = (val) => {
+    setMonth(val);
+    updateDayValuesAndDay(year, val);
+  };
+
+  const setYearAndThenDayValues = (val) => {
+    setYear(val);
+    updateDayValuesAndDay(val, month);
+  };
 
   const isFormComplete = month && day && year && time;
 
@@ -41,12 +75,19 @@ function DobForm({ onSubmit }) {
       </div>
 
       <div className="form-row">
-        <RadSelect value={month} onChange={setMonth} required>
+        <RadSelect value={year} onChange={setYearAndThenDayValues} required>
+          <option disabled selected={!!year} value="">Year</option>
+          {yearValues.map(value =>
+            <option value={value} key={value}>{value}</option>
+          )}
+        </RadSelect>
+
+        <RadSelect value={month} onChange={setMonthAndThenDayValues} required>
           {/* Source: https://stackoverflow.com/a/29806043 */}
           {/* TODO: Fix display bug in Chrome */}
           <option disabled selected={!!month} value=""> Month</option>
           {monthNames.map((name, i) =>
-            <option value={i+1} key={name}>{name}</option>
+            <option value={i} key={name}>{name}</option>
           )}
         </RadSelect>
 
@@ -57,14 +98,7 @@ function DobForm({ onSubmit }) {
           )}
         </RadSelect>
 
-        <RadSelect value={year} onChange={setYear} required>
-          <option disabled selected={!!year} value="">Year</option>
-          {yearValues.map(value =>
-            <option value={value} key={value}>{value}</option>
-          )}
-        </RadSelect>
-
-        <RadInput type="time" value={time} onChange={setTime} />
+        <RadInput type="time" value={time} onChange={setTime} required />
       </div>
 
       <div className="form-row save-button">
