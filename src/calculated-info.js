@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { formatTime } from './lib/format-time';
 
-import { prettyDateDiff } from './ui/pretty-date-diff';
+import { PrettyDateDiff } from './ui/pretty-date-diff';
 
 function dobToSecondsAlive(timeOfBirth) {
   return (
@@ -71,7 +71,7 @@ function CalculatedInfo({ timeOfBirth }) {
       </div>
 
       <div className="calculated-info-row">
-        This is in {prettyDateDiff(oneBillionSecondsDate)}.
+        This is in <PrettyDateDiff date={oneBillionSecondsDate} />.
       </div>
     </>
   );

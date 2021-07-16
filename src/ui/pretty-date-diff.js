@@ -3,7 +3,7 @@
   const SECONDS_PER_HOUR = 60 * 60;
   const SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
 
-function prettyDateDiff(date, anchorDate = null) {
+function PrettyDateDiff(date, anchorDate = null) {
   anchorDate = anchorDate || new Date(Date.now());
   const [a, b] = date > anchorDate ? [anchorDate, date] : [date, anchorDate];
   const diffInSeconds = Math.floor((b.getTime() - a.getTime()) / 1000);
@@ -30,4 +30,4 @@ function pluralize(word, count) {
   return count === 1 ? word : `${word}s`;
 }
 
-export { prettyDateDiff };
+export { PrettyDateDiff };
