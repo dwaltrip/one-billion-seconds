@@ -35,6 +35,9 @@ form.dob-form .form-row {
 form.dob-form .form-row > * {
   margin-right: 10px;
 }
+form.dob-form .form-row > *:last-child {
+  margin-right: 0;
+}
 
 form.dob-form .form-row.save-button {
   justify-content: flex-end;
@@ -49,6 +52,29 @@ form.dob-form select option {
 }
 form.dob-form select option[value=""][disabled] {
   display: none;
+}
+
+.dob-form .tz-editor-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+  border-top: 1px solid #aaa;
+  padding-top: 25px;
+}
+.dob-form .tz-editor-row .tz-label {
+  margin-right: 5px;
+}
+.dob-form .tz-editor-row .tz-select-opener {
+  margin-left: 10px;
+  color: #9d916a;
+  text-decoration: underline;
+}
+.dob-form .tz-editor-row .tz-select-opener:hover {
+  cursor: pointer;
+  color: #60532c;
 }
 
 /* ---- CalculatedInfo ---- */

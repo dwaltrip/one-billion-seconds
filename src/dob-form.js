@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { DateTime } from 'luxon';
 
 import { range } from './lib/range';
 import { RadInput, RadSelect } from './ui/rad-form';
+
+import { IANATimeZones } from './lib/timezones';
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
@@ -21,7 +24,7 @@ function daysInMonth(year, month) {
 }
 
 const startYear = 1920;
-const currYear = new Date(Date.now()).getFullYear();
+const currYear = DateTime.now().year;
 const yearValues = range(startYear, currYear).map(num => "" + num).reverse();
 
 function convertToDate({ month, day, year, time }) {
@@ -35,12 +38,18 @@ function convertToDate({ month, day, year, time }) {
   return new Date(year, month, day, hour, minute);
 }
 
+const localTz = DateTime.now().zoneName;
+
 function DobForm({ onSubmit }) {
   const [month, setMonth] = useState('');
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');
   const [time, setTime] = useState('');
   const [dayValues, setDayValues] = useState(dayValuesDefault);
+  const [tz, setTz] = useState(localTz);
+  const [isEditingTz, setIsEditingTz] = useState(false);
+
+  const toggleTimezoneEditor = () => setIsEditingTz(!isEditingTz);
 
   const updateDayValuesAndDay = (year, month) => {
     // Must use the passed in values here, not the ones from `useState` above,
@@ -111,6 +120,23 @@ function DobForm({ onSubmit }) {
         >
           Save
         </button>
+      </div>
+
+      <div className="tz-editor-row">
+        <span className="tz-label">Timezone:</span>
+        {isEditingTz ? (
+          <RadSelect value={tz} onChange={setTz} required>
+            {IANATimeZones.map(name =>
+              <option value={name} key={name}>{name}</option>
+            )}
+          </RadSelect>
+        ) : (
+          <span className="current-tz">{tz}</span>
+        )}
+
+        <span className="tz-select-opener" onClick={toggleTimezoneEditor}>
+          {isEditingTz ? 'done' : 'edit'}
+        </span>
       </div>
     </form>
   );
