@@ -1,12 +1,13 @@
+import { DateTime } from 'luxon';
 
-  const SECONDS_PER_MINUTE = 60;
-  const SECONDS_PER_HOUR = 60 * 60;
-  const SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 60 * 60;
+const SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
 
-function PrettyDateDiff(date, anchorDate = null) {
-  anchorDate = anchorDate || new Date(Date.now());
+function PrettyDateDiff({ date, anchorDate = null }) {
+  anchorDate = anchorDate || DateTime.now();
   const [a, b] = date > anchorDate ? [anchorDate, date] : [date, anchorDate];
-  const diffInSeconds = Math.floor((b.getTime() - a.getTime()) / 1000);
+  const diffInSeconds = Math.floor((b.toMillis() - a.toMillis()) / 1000);
 
   let remainder = diffInSeconds;
   const numDays = Math.floor(remainder / SECONDS_PER_DAY);
@@ -18,7 +19,7 @@ function PrettyDateDiff(date, anchorDate = null) {
 
   return (
     <>
-      {numDays} {pluralize('day', numDays)},
+      {numDays} {pluralize('day', numDays)}
       , {numHours} {pluralize('hour', numHours)}
       , {numMinutes} {pluralize('minute', numMinutes)}
       , and {numSeconds} {pluralize('second', numSeconds)}

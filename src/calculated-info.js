@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { formatTime } from './lib/format-time';
 
@@ -6,11 +7,18 @@ import { PrettyDateDiff } from './ui/pretty-date-diff';
 function dobToSecondsAlive(timeOfBirth) {
   return (
     Math.floor(Date.now() / 1000) -
-    Math.floor(timeOfBirth.getTime() / 1000)
+    Math.floor(timeOfBirth.toMillis() / 1000)
   ); 
 }
 
-const ONE_BILLION_SECONDS_IN_MILLISECONDS = Math.pow(10, 9) * 1000;
+function PrettifyTzName({ name }) {
+  const parts = name.split('/');
+  return parts[parts.length - 1].replaceAll('_', ' ');
+}
+
+const ONE_BILLION_SECONDS = Math.pow(10, 9);
+
+const localTz = DateTime.now().zoneName;
 
 function CalculatedInfo({ timeOfBirth }) {
   const [secondsAlive, setSecondsAlive] = useState(dobToSecondsAlive(timeOfBirth));
@@ -22,16 +30,18 @@ function CalculatedInfo({ timeOfBirth }) {
     return () => clearInterval(id);
   }, [timeOfBirth]);
 
-  const oneBillionSecondsDate = new Date(
-    timeOfBirth.getTime() + ONE_BILLION_SECONDS_IN_MILLISECONDS
-  );
+  const oneBillionSecondsDate = timeOfBirth
+    .setZone(localTz)
+    .plus({ seconds: ONE_BILLION_SECONDS });
+
+  const isLocal = timeOfBirth.zoneName === localTz;
 
   if (secondsAlive > Math.pow(10, 9)) {
     return (
       <>
         <div className="calculated-info-row">
           Birthday:
-          {' '}{timeOfBirth.toDateString()} at
+          {' '}{timeOfBirth.toJSDate().toDateString()} at
           {' '}{formatTime(timeOfBirth)}.
         </div>
 
@@ -56,8 +66,14 @@ function CalculatedInfo({ timeOfBirth }) {
 
       <div className="calculated-info-row">
         Date and time of birth: 
-        {' '}{timeOfBirth.toDateString()} at
-        {' '}{formatTime(timeOfBirth)}.
+        {' '}{timeOfBirth.toJSDate().toDateString()} at
+        {' '}{formatTime(timeOfBirth)}
+        {!isLocal && 
+          <>
+            {' '}in <PrettifyTzName name={timeOfBirth.zoneName} />
+          </>
+        }
+        .
       </div>            
 
       <div className="calculated-info-row">
@@ -66,8 +82,9 @@ function CalculatedInfo({ timeOfBirth }) {
 
       <div className="calculated-info-row">
         You will be one billion seconds old on
-        {' '}{oneBillionSecondsDate.toDateString()} at
-        {' '}{formatTime(oneBillionSecondsDate)}.
+        {' '}{oneBillionSecondsDate.toJSDate().toDateString()} at
+        {' '}{formatTime(oneBillionSecondsDate)}
+        {!isLocal ? <> in local time.</> : <>.</>}
       </div>
 
       <div className="calculated-info-row">

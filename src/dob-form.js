@@ -27,7 +27,9 @@ const startYear = 1920;
 const currYear = DateTime.now().year;
 const yearValues = range(startYear, currYear).map(num => "" + num).reverse();
 
-function convertToDate({ month, day, year, time }) {
+const localTz = DateTime.now().zoneName;
+
+function convertToDate({ month, day, year, time, tz }) {
   if (!(typeof time === 'string' && time.includes(':'))) {
     // TODO: better error handling.
     console.error('time control did not do what I expect');
@@ -35,10 +37,15 @@ function convertToDate({ month, day, year, time }) {
   }
   const [hour, minute] = time.split(":").map(x => parseInt(x));
 
-  return new Date(year, month, day, hour, minute);
+  let dateObj = {
+    year: parseInt(year),
+    month: parseInt(month) + 1,
+    day: parseInt(day),
+    hour,
+    minute,
+  };
+  return DateTime.fromObject(dateObj, { zone: tz });
 }
-
-const localTz = DateTime.now().zoneName;
 
 function DobForm({ onSubmit }) {
   const [month, setMonth] = useState('');
@@ -49,6 +56,10 @@ function DobForm({ onSubmit }) {
   const [tz, setTz] = useState(localTz);
   const [isEditingTz, setIsEditingTz] = useState(false);
 
+  const setTzAndClose = val => {
+    setTz(val);
+    setIsEditingTz(false);
+  };
   const toggleTimezoneEditor = () => setIsEditingTz(!isEditingTz);
 
   const updateDayValuesAndDay = (year, month) => {
@@ -114,7 +125,7 @@ function DobForm({ onSubmit }) {
         <button
           onClick={event => {
             event.preventDefault();
-            onSubmit(convertToDate({ month, day, year, time }));
+            onSubmit(convertToDate({ month, day, year, time, tz }));
           }}
           disabled={!isFormComplete}
         >
@@ -125,7 +136,7 @@ function DobForm({ onSubmit }) {
       <div className="tz-editor-row">
         <span className="tz-label">Timezone:</span>
         {isEditingTz ? (
-          <RadSelect value={tz} onChange={setTz} required>
+          <RadSelect value={tz} onChange={setTzAndClose} required>
             {IANATimeZones.map(name =>
               <option value={name} key={name}>{name}</option>
             )}
